@@ -1,15 +1,22 @@
 package main
 
 import (
-	"net/http"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo/middleware"
+	"./handler"
 )
 
 func main() {
+	// Echoのインスタンス作る
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
-	e.Run(standard.New(":1323"))
+
+	// 全てのリクエストで差し込みたいミドルウェア（ログとか）はここ
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// ルーティング
+	e.GET("/hello", handler.MainPage())
+
+	// サーバー起動
+	e.Start(":1323")    //ポート番号指定してね
 }
